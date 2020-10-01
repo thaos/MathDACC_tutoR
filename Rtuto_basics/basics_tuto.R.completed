@@ -1,0 +1,260 @@
+# R Crash Course -Aussois - September 25th, 2017
+# Basics of R
+# soulivanh.thao@gmail.com
+
+# The aim of this course is to provide  a basic introduction to R.
+# The idea is not to memorize all the R commands but to be able to find and use the information in the R base cheatsheet provided. For those familiar with Python or Matlab, there is also a cheatsheet giving the correspondence between the commands of those programming language.  
+# Thus, this crash course mainly consists of few exercices to make you use the cheatsheets and R.
+# The exercises are diveded into parts:
+# 1 - the main data structures in R. 
+# 2 - an example of fiting functions in R with the function lm
+
+# Credits:
+# The R base cheatsheet was made by Mhairi McNeil(http://mhairihmcneill.com/). It can be found along with other interesting cheatsheets at https://www.rstudio.com/resources/cheatsheets/
+# The R/Python/Matlab correspondance cheatsheet was made by Vidar Bronken Gundersen and can be found at http://mathesaurus.sf.net/
+
+# A few remarks: 
+# There are two assignment operators in R, = or <- In general, we tend to use <-
+# Maybe the most important function in R is the help function! To get the help on a function in R :  help("function") or ?function
+# But if you are stuck don't hesitate to ask for help! :)
+
+###################################################################
+# I. Data structures
+
+# There are 6 basic data types in R: integer, numeric, complex, logical, character and raw 
+# The main data structures in R are vector, matrix, array, list and data.frame and factor
+
+
+# vectors
+# Beware! contrary to Python, indexes from vector, matrix, etc... start from 1 and not 0!
+# the standard operator to create vectors:
+# c to concatenate values into a vector
+# other useful functions: seq and rep
+
+# 1.1. Create the vector vect1 = (1, -5, 3.8, -0.1) with the function c
+vect1 <- c(1, -5, 3.8, -0.1)
+
+# 1.2. Compute the number of elements of vect1 with the function length
+length(vect1)
+
+# 1.3. Create the vector vect2 = (2, 2, 2, 2) with the function rep
+vect2 <- rep(2, 4)
+
+# 1.4. Create the vector vect3 containing the sequence from 0 to 1 with a step of 0.1 with the function seq.
+vect3 <- seq(0, 1, 0.1)
+
+# Remark: when the sequence has a step of one, one case use the operator ":". # example:
+1:10 # sequence from 1 to 10
+
+# 1.5.  Execute vect1 + vect2
+vect1 + vect2
+# Addition operates elementwise. This is the case of a lot of mathematical operators on vectors.
+
+# 1.6. What is happening when you execute vect4 <- vect1 + vect3 ? What is the length of vect4? (example of recycling mechanism, be careful!)
+vect4 <- vect1 + vect3
+length(vect4)
+# When one vector is smaller than the other, the shorter one is completed using its own values. Its values are recycled.
+
+# 1.7. Multiply all the elements of vect4 by 2.
+vect4 * 2
+
+# 1.8. Compute the expenential of all the elements of vect4.
+exp(vect4)
+
+# 1.9. Extract the first element of vect4.
+vect4[1]
+
+# 1.10. Extract the last element of vect4.
+vect4[length(vect4)]
+
+# 1.11. Extract all the negative values of vect4.
+vect4[vect4 < 0]
+
+# 1.12. Give the position of all the negative values of vect4 with the function which
+which(vect4 < 0)
+
+# 1.13. Compute the sum of the negative values in vect4.
+sum(vect4[vect4 < 0])
+
+# 1.14. Compute the sum of the negative values in vect4 using a loop.
+sum_neg <- 0
+for(i in seq_along(vect4)){
+  if(vect4[i] < 0) sum_neg = sum_neg + vect4[i]
+}
+sum_neg
+
+# 1.15. Compute the mean of all values in vect4.
+mean(vect4)
+
+# 1.16 Create vect5 as a copy of vect4. Replace all the values in vect5 strictly superior to 1 by their logarithm.
+vect4[vect4 < 0] <- 1
+
+
+# matrices
+# A vector can be used to create a matrix. The vector values are used to fill the matrix. Matrix are by default filled by columns.
+# Examples:
+mat1 <- matrix(1:20, ncol = 2, nrow = 10)
+matrix(1:20, ncol = 2) # R deduces by itself the numbers of rows
+matrix(1:20, nrow = 10) # R deduces by itself the numbers of columns
+matrix(1:10, ncol = 2, nrow = 10) # be careful of R recycling !
+dim(mat1)# show the dimensions of mat1
+
+# 1.17. Extract from mat1 the element in row 2 and column 2
+mat1[2, 2]
+
+# 1.18. Extract from mat1 all the elements which values are between 6 and 11 (Hint: the logical AND operator is & in R).
+mat1[mat1 >= 6 & mat1 <= 11]
+
+# 1.19. Give the position in mat1 of all the elements whose values are between 6 and 11 using the function which
+which(mat1 >= 6 & mat1 <= 11)
+which(mat1 >= 6 & mat1 <= 11, arr.ind = TRUE)
+
+# 1.20. Create mat2 as a copy of mat1. Replace in mat2 all values between 6 and 11 by 8.5.
+mat1[mat1 >= 6 & mat1 <= 11]
+
+# 1.21. Create using mat1 and the concatenation function cbind a matrix with 10 rows and 4 columns
+cbind(mat1, mat1)
+
+# 1.22. Create using mat1 and the concatenation function rbind a matrix with 30 rows and 2 columns
+rbind(mat1, mat1, mat1)
+
+# 1.23. Execute mat1 * mat1 
+# What does it do ?
+mat1 * mat1
+# multiplication element-wise
+
+# 1.24. Execute mat1 * 1:5 
+# What does it do ?
+mat1 * 1:5
+# multiplication element-wise and recycling
+
+# 1.25. Create a matrix mat3 with 10 rows and 10 columns with all values equal to 1
+mat3 <- matrix(1, nrow = 10, ncol = 10)
+
+# 1.28. Do the matrix multiplication between mat1 and mat3
+mat3 %*% mat1
+
+
+# arrays
+# arrays is the extention of matrices for higher dimension. They work similarly
+# Examples:
+arr1 <- array(1:24, dim = c(2, 3, 2, 2))
+dim(arr1)
+
+# lists
+# list contains differents objects. Contrary to vectors, lists can contains objects of differents types.
+# Examples:
+list1 <- list("a", 2, FALSE) # a list with a character, a numeric and a logical variables.
+list2 <- list(var1 = "a", var2 = 2, var3 = FALSE) # we can give a name to each elements of the list.
+
+# 1.29. Extract the second element of list2 by its position.
+list2[[2]]
+
+# 1.30. Extract the second element of list2 by its name.
+list2$var2
+list2[["var2"]]
+
+# data.frames
+# A data.frame is a list of vectors of the same length but the type of each vector can be different.
+# Example:
+df1 <- data.frame(height = c(170, 181, 165, 155), sex = rep(c("male", "female"), 2))
+
+# 1.31. Extract the third row of df1.
+df1[3, ]
+
+# 1.32. Extract all but the third row of df1.
+df1[-3, ]
+
+# 1.33. Extract the second column of df1 by its position.
+df1[, 2]
+
+# 1.34. Extract the second column of df1 by its name.
+df1[, "sex"]
+df1$sex
+
+# Remark: the str function the structure of an R object
+str(df1)
+# Beware: we see that by default, the function data.frame converts strings into factors. To keep characters as characters used the argument stringsAsFactors = FALSE when creating the data.frame
+
+# Remark: the summary function prints summary statistics of the variables in the data.frame
+summary(df1)
+
+#################################################################
+# 2. Fitting a linear model. 
+# We will do a bit of statistics with the linear model and the function lm.
+# A lot of fitting function present a synthax and methods that are similar to the function lm.
+# We will this example to see how to create our own functions and how to use the optimization function optim.
+
+# 2.1. Create a vector named x of length 200 going from 0 to 1 (hint: use the length.out argument).
+x <- seq(0, 1, length.out = 200)
+
+a <- 1.5
+b <- -1
+set.seed(seed = 1) #set the seed for the random number generator.
+
+# 2.2. Use the function rnorm to simulate the random variable y = a * x + b + noise. The noise is an i.i.d. Gaussian random variable with mean 0 and standard deviation 0.5.
+y <- a * x + b + rnorm(n =  length(x), mean = 0, sd = 0.5)
+
+# 2.3. Make a scatterplot of x and y with the function plot.
+plot(x, y)
+
+# 2.4. Create a data.frame named dat. The data.frame dat contains the variables x and y.
+dat <- data.frame(x = x, y = y)
+
+# Remarks: the function names can be used to check the name of the variables in a data.frame. It can also be used to modify the variable names.
+names(dat)
+
+# 2.5. Fit a linear model to explain y in function of x using the function lm and assign the result to a variable named lm_fit.
+lm_fit <- lm(y ~ x, data = dat)
+
+# Remark: There exists of several functions to extract information from the model. For example:
+plot(lm_fit)
+print(lm_fit)
+summary(lm_fit)
+coefficients(lm_fit)
+residuals(lm_fit)
+predict(lm_fit)
+
+# 2.6. Make a scatterplot of the predictions against the real values with the function plot. Give it the title = "pred vs. real" and set the label of the y-axis and the x-axis to "pred" and "real".
+plot(y, predict(lm_fit), main = "pred vs. real", ylab = "pred", xlab = "real")
+
+# 2.7. Plot the residuals in function of the covariate x. Set the colour of the points to blue.
+plot(x, residuals(lm_fit), col = "blue")
+
+# 2.8. Create a data.frame new_dat containing new points x drawn from a uniform distribution between 0 and 1 (hint: see the function runif).
+new_dat <- data.frame(x = runif(n = 200))
+
+# 2.9. Predict the value of y for those new points x
+predict(object = lm_fit, newdata = new_dat)
+
+
+# The function optim.
+# In this part, we will fit a linear model by ordianry least squares using gradien descent. 
+
+# 2.10. Create a cost function named cost_fun which takes as parameters:
+# intercept = the intercept of the linear model
+# slope = the slope of the linear model
+# y = the dependent variable
+# x = the covariate
+# and return the sum of the squared errors between the real and predicted values of y
+cost_fun <- function(intercept, slope, y, x){
+  sum((y - (slope * x + intercept))^2)
+}
+
+# 2.11. Use the cost function on the data.frame dat with the coefficient fitted with the function lm.
+cost_fun(intercept = coefficients(lm_fit)[1], slope = coefficients(lm_fit)[2], y = dat$y, x = dat$x)
+
+# Remark: We need to create a function optim_fun as a wrapper around the cost_fun so that it can be used with the optim function. It takes as parameters :
+# par = a vector of length 2, the first element being the intercept and the second the slope of the model.
+# x = the covariate
+# and return the sum of the squared errors between the real and predicted values of y
+optim_fun <- function(par, y, x){
+  cost_fun(intercept = par[1], slope = par[2], y = y, x = x)
+}
+
+# 2.12. Use the function optim with optim_fun to find the intercept and the slope parameters that minimize the cost function. 
+# remark by default optim is an minimizer.
+optim_fit <- optim(par = c("intercept" = 0, "slope" = 1), optim_fun, y = dat$y, x = dat$x) 
+
+# 2.13. Use cost_fun with the parameters found by optim. (hint: use the function str or look at the optim help page to see what it returns).
+cost_fun(intercept = optim_fit$par[1], slope = optim_fit$par[2], y = dat$y, x = dat$x)
